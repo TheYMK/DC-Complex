@@ -1,0 +1,40 @@
+name: Deploy MultiDocker
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Build test version of react and run tests (if other project have testing enabled we can also build and run them)
+      - uses: actions/checkout@v2
+      - run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+      - run: docker build -t ${{ secrets.DOCKER_USERNAME }}/react-test -f ./client/Dockerfile.dev ./client
+      - run: docker run -e CI=true ${{ secrets.DOCKER_USERNAME }}/react-test npm run test
+      # Build prod versions of all projects
+      - run: docker build -t ${{ secrets.DOCKER_USERNAME }}/multi-client-v1 ./client
+      - run: docker build -t ${{ secrets.DOCKER_USERNAME }}/multi-nginx-v1 ./nginx
+      - run: docker build -t ${{ secrets.DOCKER_USERNAME }}/multi-server-v1 ./server
+      - run: docker build -t ${{ secrets.DOCKER_USERNAME }}/multi-worker-v1 ./worker
+      # Push all to docker hub
+      # - run: docker push ${{ secrets.DOCKER_USERNAME }}/multi-client-v1
+      # - run: docker push ${{ secrets.DOCKER_USERNAME }}/multi-nginx-v1
+      # - run: docker push ${{ secrets.DOCKER_USERNAME }}/multi-server-v1
+      # - run: docker push ${{ secrets.DOCKER_USERNAME }}/multi-worker-v1
+
+      # - name: Generate deployment package
+      #   run: zip -r deploy.zip . -x '*.git*'
+
+      # - name: Deploy to EB
+      #   uses: einaregilsson/beanstalk-deploy@v18
+      #   with:
+      #     aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
+      #     aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
+      #     application_name: multi-gh # to be replaced
+      #     environment_name: Multigh-env # to be replaced
+      #     existing_bucket_name: elasticbeanstalk-us-east-1-923445559289 # to be replaced
+      #     region: us-east-1 # to be replaced
+      #     version_label: ${{ github.sha }}
+      #     deployment_package: deploy.zip

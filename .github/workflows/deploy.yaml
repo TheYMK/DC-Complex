@@ -16,12 +16,12 @@ jobs:
       # Build prod versions of all projects
       - run: docker build -t ${{ secrets.DOCKER_USERNAME }}/multi-client-v1 ./client
       - run: docker build -t ${{ secrets.DOCKER_USERNAME }}/multi-nginx-v1 ./nginx
-      - run: docker build -t ${{ secrets.DOCKER_USERNAME }}/multi-server-v1 ./server
+      - run: docker build -t ${{ secrets.DOCKER_USERNAME }}/multi-api-v1 ./api
       - run: docker build -t ${{ secrets.DOCKER_USERNAME }}/multi-worker-v1 ./worker
       # Push all to docker hub
       # - run: docker push ${{ secrets.DOCKER_USERNAME }}/multi-client-v1
       # - run: docker push ${{ secrets.DOCKER_USERNAME }}/multi-nginx-v1
-      # - run: docker push ${{ secrets.DOCKER_USERNAME }}/multi-server-v1
+      # - run: docker push ${{ secrets.DOCKER_USERNAME }}/multi-api-v1
       # - run: docker push ${{ secrets.DOCKER_USERNAME }}/multi-worker-v1
 
       # - name: Generate deployment package
